@@ -1,0 +1,21 @@
+.node-root {
+    flex-direction: column;
+}
+
+.unity-node__extension-container {
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.input-port,
+.output-port {
+    align-items: center;
+    justify-content: center;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.node-name {
+    width: 100%;
+    margin-bottom: 4px;
+}
