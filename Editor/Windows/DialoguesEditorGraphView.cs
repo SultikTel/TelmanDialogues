@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using TelmanDialogues.Data;
@@ -9,6 +10,7 @@ using UnityEditor.Experimental.GraphView;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
+using static UnityEditor.Experimental.GraphView.GraphView;
 
 namespace TelmanDialogues.Windows
 {
@@ -33,6 +35,43 @@ namespace TelmanDialogues.Windows
             OnElementsDeleted();
 
             AddToolBar();
+
+            graphViewChanged += OnGraphViewChanged;
+        }
+
+        private GraphViewChange OnGraphViewChanged(GraphViewChange change)
+        {
+            if (change.edgesToCreate != null)
+            {
+                foreach (var edge in change.edgesToCreate)
+                {
+                    var choice = edge.output.userData as DialogueChoice;
+                    var targetNode = edge.input.node as DialogueSystemNode;
+
+                    if (choice != null && targetNode != null)
+                    {
+                        choice.SetNextBlock(targetNode.DialoguesBlock);
+                    }
+                }
+            }
+
+            if (change.elementsToRemove != null)
+            {
+                foreach (var element in change.elementsToRemove)
+                {
+                    if (element is Edge edge)
+                    {
+                        var choice = edge.output.userData as DialogueChoice;
+
+                        if (choice != null)
+                        {
+                            choice.SetNextBlock(null);
+                        }
+                    }
+                }
+            }
+
+            return change;
         }
 
         public void Init(DialoguesSystem dialoguesSystem)
@@ -60,11 +99,15 @@ namespace TelmanDialogues.Windows
 
         private void DrawNodeInspector(DialogueSystemNode node)
         {
+            DialoguesBlock block = node.DialoguesBlock;
+
+            if (block != null)
+            {
+                EditorGUILayout.LabelField("Node Name", block.BlockName, EditorStyles.boldLabel);
+            }
             _inspectorScroll = EditorGUILayout.BeginScrollView(_inspectorScroll);
 
             EditorGUILayout.Space(10);
-
-            DialoguesBlock block = node.DialoguesBlock;
 
             if (block != null)
             {
@@ -82,9 +125,9 @@ namespace TelmanDialogues.Windows
 
         #region Save
 
-        private void Save()
+        private void ResetPosition()
         {
-            _dialoguesSystem.Save(GetAllData());
+            UpdateViewTransform(Vector3.zero, Vector3.one);
         }
 
         private List<DialoguesSystemNodeData> GetAllData()
@@ -215,12 +258,12 @@ namespace TelmanDialogues.Windows
         {
             Toolbar toolbar = new Toolbar();
 
-            Button saveButton = new Button(Save)
+            Button resetPositionButton = new Button(ResetPosition)
             {
-                text = "Save"
+                text = "ResetPosition"
             };
 
-            toolbar.Add(saveButton);
+            toolbar.Add(resetPositionButton);
 
             Add(toolbar);
         }
@@ -249,13 +292,19 @@ namespace TelmanDialogues.Windows
 
                 foreach (Edge edge in edgesToDelete.Distinct())
                 {
-                    edge.input?.Disconnect(edge);
-                    edge.output?.Disconnect(edge);
-                    RemoveElement(edge);
+                    ClearEdge(edge);
                 }
 
                 foreach (DialogueSystemNode node in nodesToDelete)
                 {
+                    foreach (var port in node.Query<Port>().ToList())
+                    {
+                        foreach (var edge in port.connections.ToList())
+                        {
+                            ClearEdge(edge);
+                        }
+                    }
+
                     if (node.DialoguesBlock != null)
                     {
                         string path = AssetDatabase.GetAssetPath(node.DialoguesBlock);
@@ -270,6 +319,19 @@ namespace TelmanDialogues.Windows
                     RemoveElement(node);
                 }
             };
+        }
+
+        private void ClearEdge(Edge edge)
+        {
+            if (edge.output?.userData is DialogueChoice choice)
+            {
+                choice.SetNextBlock(null);
+            }
+
+            edge.input?.Disconnect(edge);
+            edge.output?.Disconnect(edge);
+
+            RemoveElement(edge);
         }
 
         private void AddManipulators()

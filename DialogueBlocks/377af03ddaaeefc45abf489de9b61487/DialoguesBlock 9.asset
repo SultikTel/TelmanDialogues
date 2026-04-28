@@ -9,7 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a5d244e95663b6945bc30b9602e2ab48, type: 3}
-  m_Name: DialoguesSystem
+  m_Script: {fileID: 11500000, guid: 6c9ad9863be7fcc44a869fcc426204f6, type: 3}
+  m_Name: DialoguesBlock 9
   m_EditorClassIdentifier: 
-  _dataFolderPath: Assets/TelmanDialogues/DialogueBlocks/39466a27bfe255246b713defa468e0da
+  _blockName: NewNode
+  _dialogueLines: []
+  _choices: []

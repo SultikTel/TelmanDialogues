@@ -1,5 +1,5 @@
+using System.Linq;
 using TelmanDialogues.Dialogues;
-using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -28,17 +28,25 @@ namespace TelmanDialogues.Windows.Elements
             {
                 value = _dialoguesBlock.BlockName
             };
+
             nodeName.RegisterValueChangedCallback(evt =>
             {
                 _graphView.RemoveNode(this);
                 _dialoguesBlock.SetName(evt.newValue);
                 _graphView.AddNode(this);
             });
+
             titleContainer.Insert(0, nodeName);
 
             Button addChoiceButton = new Button(() =>
             {
-                Port choicePort = InstantiatePort(Orientation.Horizontal, Direction.Output, Port.Capacity.Single, typeof(bool));
+                Port choicePort = InstantiatePort(
+                    Orientation.Horizontal,
+                    Direction.Output,
+                    Port.Capacity.Single,
+                    typeof(bool)
+                );
+
                 choicePort.portName = "";
 
                 Button deleteChoice = new Button()
@@ -50,22 +58,46 @@ namespace TelmanDialogues.Windows.Elements
                 {
                     value = "NewChoice"
                 };
+
                 choiceTextField.style.flexGrow = 1;
                 choiceTextField.style.flexShrink = 1;
                 choiceTextField.style.maxWidth = 100;
+
+                DialogueChoice dialogueChoice = new DialogueChoice(choiceTextField.value, null);
+
+                _dialoguesBlock.Choices.Add(dialogueChoice);
+
+                choicePort.userData = dialogueChoice;
+
+                choiceTextField.RegisterValueChangedCallback(evt =>
+                {
+                    dialogueChoice.SetText(evt.newValue);
+                });
+
+                deleteChoice.clicked += () =>
+                {
+                    var edgesToRemove = choicePort.connections.ToList();
+
+                    foreach (var edge in edgesToRemove)
+                    {
+                        edge.input?.Disconnect(edge);
+                        edge.output?.Disconnect(edge);
+
+                        _graphView.RemoveElement(edge);
+                    }
+
+                    dialogueChoice.SetNextBlock(null);
+
+                    _dialoguesBlock.Choices.Remove(dialogueChoice);
+                    outputContainer.Remove(choicePort);
+
+                    RefreshExpandedState();
+                };
 
                 choicePort.Add(choiceTextField);
                 choicePort.Add(deleteChoice);
 
                 outputContainer.Add(choicePort);
-
-                DialogueChoice dialogueChoice = new DialogueChoice(choiceTextField.value, null);
-
-                _dialoguesBlock.Choices.Add(dialogueChoice);
-                choiceTextField.RegisterValueChangedCallback(evt =>
-                {
-                    dialogueChoice.SetText(evt.newValue);
-                });
 
                 RefreshExpandedState();
             })
@@ -75,13 +107,25 @@ namespace TelmanDialogues.Windows.Elements
 
             mainContainer.Insert(1, addChoiceButton);
 
-            Port inputPort = InstantiatePort(Orientation.Horizontal, Direction.Input, Port.Capacity.Multi, typeof(bool));
+            Port inputPort = InstantiatePort(
+                Orientation.Horizontal,
+                Direction.Input,
+                Port.Capacity.Multi,
+                typeof(bool)
+            );
+
             inputPort.portName = "Connections";
             inputContainer.Add(inputPort);
 
             foreach (DialogueChoice dialogueChoice in _dialoguesBlock.Choices)
             {
-                Port choicePort = InstantiatePort(Orientation.Horizontal, Direction.Output, Port.Capacity.Single, typeof(bool));
+                Port choicePort = InstantiatePort(
+                    Orientation.Horizontal,
+                    Direction.Output,
+                    Port.Capacity.Single,
+                    typeof(bool)
+                );
+
                 choicePort.portName = "";
 
                 Button deleteChoice = new Button()
@@ -93,6 +137,13 @@ namespace TelmanDialogues.Windows.Elements
                 {
                     value = dialogueChoice.Text
                 };
+
+                choicePort.userData = dialogueChoice;
+
+                choiceTextField.RegisterValueChangedCallback(evt =>
+                {
+                    dialogueChoice.SetText(evt.newValue);
+                });
 
                 choicePort.Add(choiceTextField);
                 choicePort.Add(deleteChoice);

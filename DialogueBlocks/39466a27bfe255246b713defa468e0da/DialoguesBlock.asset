@@ -12,19 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c9ad9863be7fcc44a869fcc426204f6, type: 3}
   m_Name: DialoguesBlock
   m_EditorClassIdentifier: 
-  _blockName: NewNode
+  _blockName: "\u0430\u044B\u0444\u0430\u044B\u0444\u0430\u0444\u0430\u0444\u0430\u0444\u044B\u0430\u0444\u0430\u0444\u044B\u0432\u0430"
   _dialogueLines:
-  - _character: fggfgf
-    _line: gfgfgffgffgf
+  - _character: 
+    _line: 
     _events: []
-  - _character: ddddg
-    _line: gddggdgd
-    _events: []
-  - _character: ddddg
-    _line: gddggdgd
+  - _character: 
+    _line: 
     _events: []
   _choices:
+  - _text: "\u044B\u0432\u0430\u044B\u0444\u0430\u0444\u0430\u0432\u0444\u044B"
+    _nextBlock: {fileID: 11400000, guid: 6415702960ad5034090916fb01fb0af0, type: 2}
   - _text: NewChoice
-    _nextBlock: {fileID: 0}
-  - _text: NewChoice
-    _nextBlock: {fileID: 0}
+    _nextBlock: {fileID: 11400000, guid: 7c76bd688639ec045bf8d1bae9c9e883, type: 2}
