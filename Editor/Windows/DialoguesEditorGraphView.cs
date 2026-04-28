@@ -112,7 +112,7 @@ namespace TelmanDialogues.Windows
                     DialoguesSystemNodeData nodeData = new DialoguesSystemNodeData();
 
                     DialoguesBlock block = new DialoguesBlock();
-                    block.SetData(node.NodeName, node.DialoguesBlock.DialogueLines, null);
+                    //block.SetData(node.NodeName, node.DialoguesBlock.DialogueLines, null);
                     nodeData.SetValues(node.GetPosition().position, block);
                     result.Add(nodeData);
                 }
@@ -147,10 +147,8 @@ namespace TelmanDialogues.Windows
 
             DialoguesBlock block = CreateDialoguesBlockAsset();
 
-            node.Init(this, position);
+            node.Init(this, position, block);
             node.Draw();
-
-            node.SetDialoguesBlock(block);
 
             AddElement(node);
 
@@ -161,7 +159,7 @@ namespace TelmanDialogues.Windows
 
         public void AddNode(DialogueSystemNode dialogueSystemNode)
         {
-            string nodeName = dialogueSystemNode.NodeName;
+            string nodeName = dialogueSystemNode.DialoguesBlock.BlockName;
 
             if (!_nodes.ContainsKey(nodeName))
             {
@@ -187,7 +185,7 @@ namespace TelmanDialogues.Windows
         }
         public void RemoveNode(DialogueSystemNode dialogueSystemNode)
         {
-            string nodeName = dialogueSystemNode.NodeName;
+            string nodeName = dialogueSystemNode.DialoguesBlock.BlockName;
 
             _nodes[nodeName].Nodes.Remove(dialogueSystemNode);
 
@@ -209,7 +207,7 @@ namespace TelmanDialogues.Windows
         private DialoguesBlock CreateDialoguesBlockAsset()
         {
             DialoguesBlock block = ScriptableObject.CreateInstance<DialoguesBlock>();
-
+            block.SetData("NewNode", new(), new());
             string folderPath = _dialoguesSystem.DataFolderPath;
 
             string assetPath = AssetDatabase.GenerateUniqueAssetPath(

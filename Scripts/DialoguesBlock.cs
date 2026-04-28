@@ -20,6 +20,11 @@ namespace TelmanDialogues.Dialogues
             _dialogueLines = dialogueLines;
             _choices = choices;
         }
+
+        public void SetName(string name)
+        {
+            _blockName = name;
+        }
     }
 
     [Serializable]

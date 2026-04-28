@@ -1,4 +1,5 @@
 using TelmanDialogues.Dialogues;
+using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -9,17 +10,14 @@ namespace TelmanDialogues.Windows.Elements
     {
         private Color _defaultBGColor;
         private DialoguesEditorGraphView _graphView;
-        [SerializeField] private string _nodeName;
-        public string NodeName => _nodeName;
         [SerializeField] private DialoguesBlock _dialoguesBlock;
         public DialoguesBlock DialoguesBlock => _dialoguesBlock;
 
-        public void Init(DialoguesEditorGraphView dialoguesEditorGraphView, Vector2 position)
+        public void Init(DialoguesEditorGraphView dialoguesEditorGraphView, Vector2 position, DialoguesBlock block)
         {
             _graphView = dialoguesEditorGraphView;
 
-            _nodeName = "Name";
-
+            _dialoguesBlock = block;
             SetPosition(new Rect(position, Vector2.zero));
 
             AddToClassList("node-root");
@@ -35,21 +33,15 @@ namespace TelmanDialogues.Windows.Elements
             inputPort.portName = "";
             inputPort.AddToClassList("input-port");
 
-            Port outputPort = InstantiatePort(Orientation.Vertical, Direction.Output, Port.Capacity.Multi, typeof(bool));
-            outputPort.portName = "";
-            outputPort.AddToClassList("output-port");
-
             TextField nodeName = new TextField()
             {
-                value = _nodeName
+                value = _dialoguesBlock.BlockName
             };
 
             nodeName.RegisterValueChangedCallback(evt =>
             {
                 _graphView.RemoveNode(this);
-
-                _nodeName = evt.newValue;
-
+                _dialoguesBlock.SetName(evt.newValue);
                 _graphView.AddNode(this);
             });
 
@@ -60,7 +52,44 @@ namespace TelmanDialogues.Windows.Elements
 
             inputContainer.Add(inputPort);
             inputContainer.Add(nodeName);
-            inputContainer.Add(outputPort);
+
+            if (_dialoguesBlock != null && _dialoguesBlock.Choices != null)
+            {
+                for (int i = 0; i < _dialoguesBlock.Choices.Count; i++)
+                {
+                    int index = i;
+                    DialogueChoice choice = _dialoguesBlock.Choices[index];
+
+                    Port outputPort = InstantiatePort(Orientation.Vertical, Direction.Output, Port.Capacity.Single, typeof(bool));
+                    outputPort.portName = "";
+
+                    Label label = new Label(choice.Text);
+                    label.style.flexGrow = 1;
+
+                    Button deleteButton = new Button(() =>
+                    {
+                        _dialoguesBlock.Choices.RemoveAt(index);
+                        Draw();
+                    })
+                    {
+                        text = "x"
+                    };
+
+                    deleteButton.style.width = 18;
+                    deleteButton.style.height = 18;
+
+                    VisualElement container = new VisualElement();
+                    container.style.flexDirection = FlexDirection.Row;
+                    container.style.alignItems = Align.Center;
+                    container.style.flexGrow = 1;
+
+                    container.Add(outputPort);
+                    container.Add(label);
+                    container.Add(deleteButton);
+
+                    outputContainer.Add(container);
+                }
+            }
 
             titleContainer.style.display = DisplayStyle.None;
 
@@ -69,13 +98,27 @@ namespace TelmanDialogues.Windows.Elements
                 _graphView.SelectNode(this);
             });
 
+            Button addChoiceButton = new Button(() =>
+            {
+                if (_dialoguesBlock == null)
+                    return;
+
+                Undo.RecordObject(_dialoguesBlock, "Add Choice");
+
+                _dialoguesBlock.Choices.Add(new DialogueChoice());
+
+                EditorUtility.SetDirty(_dialoguesBlock);
+
+                Draw();
+            })
+            {
+                text = "Add Choice"
+            };
+
+            extensionContainer.Add(addChoiceButton);
+
             RefreshExpandedState();
         }
-        public void SetDialoguesBlock(DialoguesBlock block)
-        {
-            _dialoguesBlock = block;
-        }
-
         public void SetErrorStyle(Color color)
         {
             mainContainer.style.backgroundColor = color;
