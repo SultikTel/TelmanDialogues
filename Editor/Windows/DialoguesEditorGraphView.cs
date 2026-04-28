@@ -60,38 +60,24 @@ namespace TelmanDialogues.Windows
 
         private void DrawNodeInspector(DialogueSystemNode node)
         {
-            //_inspectorScroll = EditorGUILayout.BeginScrollView(_inspectorScroll);
+            _inspectorScroll = EditorGUILayout.BeginScrollView(_inspectorScroll);
 
-            //string newName = EditorGUILayout.TextField("Node Name", node.NodeName);
+            EditorGUILayout.Space(10);
 
-            //if (newName != node.NodeName)
-            //{
-            //    RemoveNode(node);
+            DialoguesBlock block = node.DialoguesBlock;
 
-            //    node.name = newName;
+            if (block != null)
+            {
+                SerializedObject so = new SerializedObject(block);
+                so.Update();
 
-            //    AddNode(node);
-            //}
+                SerializedProperty lines = so.FindProperty("_dialogueLines");
+                EditorGUILayout.PropertyField(lines, true);
 
-            //EditorGUILayout.Space(10);
+                so.ApplyModifiedProperties();
+            }
 
-            //DialoguesBlock block = node.DialoguesBlock;
-
-            //if (block != null)
-            //{
-            //    SerializedObject so = new SerializedObject(block);
-            //    so.Update();
-
-            //    SerializedProperty lines = so.FindProperty("_dialogueLines");
-            //    EditorGUILayout.PropertyField(lines, true);
-
-            //    SerializedProperty choices = so.FindProperty("_choices");
-            //    EditorGUILayout.PropertyField(choices, true);
-
-            //    so.ApplyModifiedProperties();
-            //}
-
-            //EditorGUILayout.EndScrollView();
+            EditorGUILayout.EndScrollView();
         }
 
         #region Save
@@ -332,33 +318,5 @@ namespace TelmanDialogues.Windows
         }
 
         #endregion
-    }
-
-    public class DialogueEdgeConnectorListener : IEdgeConnectorListener
-    {
-        private GraphView _graphView;
-
-        public DialogueEdgeConnectorListener(GraphView graphView)
-        {
-            _graphView = graphView;
-        }
-
-        public void OnDropOutsidePort(Edge edge, Vector2 position)
-        {
-        }
-
-        public void OnDrop(GraphView graphView, Edge edge)
-        {
-            DialogueSystemEdge customEdge = new DialogueSystemEdge
-            {
-                output = edge.output,
-                input = edge.input
-            };
-
-            customEdge.output.Connect(customEdge);
-            customEdge.input.Connect(customEdge);
-
-            graphView.AddElement(customEdge);
-        }
     }
 }

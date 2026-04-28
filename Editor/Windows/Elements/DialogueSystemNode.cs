@@ -24,7 +24,6 @@ namespace TelmanDialogues.Windows.Elements
 
         public void Draw()
         {
-
             TextField nodeName = new TextField()
             {
                 value = _dialoguesBlock.BlockName
@@ -59,6 +58,14 @@ namespace TelmanDialogues.Windows.Elements
                 choicePort.Add(deleteChoice);
 
                 outputContainer.Add(choicePort);
+
+                DialogueChoice dialogueChoice = new DialogueChoice(choiceTextField.value, null);
+
+                _dialoguesBlock.Choices.Add(dialogueChoice);
+                choiceTextField.RegisterValueChangedCallback(evt =>
+                {
+                    dialogueChoice.SetText(evt.newValue);
+                });
 
                 RefreshExpandedState();
             })

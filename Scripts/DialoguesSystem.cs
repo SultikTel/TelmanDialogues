@@ -7,10 +7,7 @@ namespace TelmanDialogues.Dialogues
 {
     public class DialoguesSystem : ScriptableObject
     {
-        [SerializeField] private List<string> _characters;
-        public List<string> Characters => _characters;
-
-        [SerializeField] private List<DialoguesSystemNodeData> _dialoguesSystemNodeDatas;
+        private List<DialoguesSystemNodeData> _dialoguesSystemNodeDatas;
         public List<DialoguesSystemNodeData> DialoguesSystemNodeDatas => _dialoguesSystemNodeDatas;
 
         [SerializeField, HideInInspector] private string _dataFolderPath;

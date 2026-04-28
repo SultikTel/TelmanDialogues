@@ -26,15 +26,29 @@ namespace TelmanDialogues.Dialogues
             _blockName = name;
         }
     }
-
     [Serializable]
     public class DialogueChoice
     {
         [SerializeField] private string _text;
         public string Text => _text;
-
         [SerializeField] private DialoguesBlock _nextBlock;
         public DialoguesBlock NextBlock => _nextBlock;
+
+        public DialogueChoice(string text, DialoguesBlock nextBlock)
+        {
+            _text = text;
+            _nextBlock = nextBlock;
+        }
+
+        public void SetText(string newText)
+        {
+            _text = newText;
+        }
+
+        public void SetNextBlock(DialoguesBlock newDialogueTextBlock)
+        {
+            _nextBlock = newDialogueTextBlock;
+        }
     }
 
     [Serializable]

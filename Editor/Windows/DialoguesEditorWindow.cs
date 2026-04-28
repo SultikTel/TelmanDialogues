@@ -67,7 +67,13 @@ namespace TelmanDialogues.Windows
                 style =
                 {
                     width = 320,
+                    minWidth = 200,
+                    maxWidth = 600,
+
                     flexShrink = 0,
+                    flexGrow = 0,
+                    flexBasis = 320,
+
                     backgroundColor = new Color(0.18f, 0.18f, 0.18f),
                     paddingLeft = 6,
                     paddingRight = 6
