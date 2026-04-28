@@ -16,106 +16,87 @@ namespace TelmanDialogues.Windows.Elements
         public void Init(DialoguesEditorGraphView dialoguesEditorGraphView, Vector2 position, DialoguesBlock block)
         {
             _graphView = dialoguesEditorGraphView;
-
             _dialoguesBlock = block;
             SetPosition(new Rect(position, Vector2.zero));
-
-            AddToClassList("node-root");
 
             _defaultBGColor = new Color(29f / 255, 29f / 255, 30f / 255);
         }
 
         public void Draw()
         {
-            AddToClassList("node-root");
-
-            Port inputPort = InstantiatePort(Orientation.Vertical, Direction.Input, Port.Capacity.Multi, typeof(bool));
-            inputPort.portName = "";
-            inputPort.AddToClassList("input-port");
 
             TextField nodeName = new TextField()
             {
                 value = _dialoguesBlock.BlockName
             };
-
             nodeName.RegisterValueChangedCallback(evt =>
             {
                 _graphView.RemoveNode(this);
                 _dialoguesBlock.SetName(evt.newValue);
                 _graphView.AddNode(this);
             });
-
-            nodeName.AddToClassList("node-name");
-
-            inputContainer.Clear();
-            outputContainer.Clear();
-
-            inputContainer.Add(inputPort);
-            inputContainer.Add(nodeName);
-
-            if (_dialoguesBlock != null && _dialoguesBlock.Choices != null)
-            {
-                for (int i = 0; i < _dialoguesBlock.Choices.Count; i++)
-                {
-                    int index = i;
-                    DialogueChoice choice = _dialoguesBlock.Choices[index];
-
-                    Port outputPort = InstantiatePort(Orientation.Vertical, Direction.Output, Port.Capacity.Single, typeof(bool));
-                    outputPort.portName = "";
-
-                    Label label = new Label(choice.Text);
-                    label.style.flexGrow = 1;
-
-                    Button deleteButton = new Button(() =>
-                    {
-                        _dialoguesBlock.Choices.RemoveAt(index);
-                        Draw();
-                    })
-                    {
-                        text = "x"
-                    };
-
-                    deleteButton.style.width = 18;
-                    deleteButton.style.height = 18;
-
-                    VisualElement container = new VisualElement();
-                    container.style.flexDirection = FlexDirection.Row;
-                    container.style.alignItems = Align.Center;
-                    container.style.flexGrow = 1;
-
-                    container.Add(outputPort);
-                    container.Add(label);
-                    container.Add(deleteButton);
-
-                    outputContainer.Add(container);
-                }
-            }
-
-            titleContainer.style.display = DisplayStyle.None;
-
-            RegisterCallback<MouseDownEvent>(evt =>
-            {
-                _graphView.SelectNode(this);
-            });
+            titleContainer.Insert(0, nodeName);
 
             Button addChoiceButton = new Button(() =>
             {
-                if (_dialoguesBlock == null)
-                    return;
+                Port choicePort = InstantiatePort(Orientation.Horizontal, Direction.Output, Port.Capacity.Single, typeof(bool));
+                choicePort.portName = "";
 
-                Undo.RecordObject(_dialoguesBlock, "Add Choice");
+                Button deleteChoice = new Button()
+                {
+                    text = "X"
+                };
 
-                _dialoguesBlock.Choices.Add(new DialogueChoice());
+                TextField choiceTextField = new TextField()
+                {
+                    value = "NewChoice"
+                };
+                choiceTextField.style.flexGrow = 1;
+                choiceTextField.style.flexShrink = 1;
+                choiceTextField.style.maxWidth = 100;
 
-                EditorUtility.SetDirty(_dialoguesBlock);
+                choicePort.Add(choiceTextField);
+                choicePort.Add(deleteChoice);
 
-                Draw();
+                outputContainer.Add(choicePort);
+
+                RefreshExpandedState();
             })
             {
                 text = "Add Choice"
             };
 
-            extensionContainer.Add(addChoiceButton);
+            mainContainer.Insert(1, addChoiceButton);
+
+            Port inputPort = InstantiatePort(Orientation.Horizontal, Direction.Input, Port.Capacity.Multi, typeof(bool));
+            inputPort.portName = "Connections";
+            inputContainer.Add(inputPort);
+
+            foreach (DialogueChoice dialogueChoice in _dialoguesBlock.Choices)
+            {
+                Port choicePort = InstantiatePort(Orientation.Horizontal, Direction.Output, Port.Capacity.Single, typeof(bool));
+                choicePort.portName = "";
+
+                Button deleteChoice = new Button()
+                {
+                    text = "X"
+                };
+
+                TextField choiceTextField = new TextField()
+                {
+                    value = dialogueChoice.Text
+                };
+
+                choicePort.Add(choiceTextField);
+                choicePort.Add(deleteChoice);
+
+                outputContainer.Add(choicePort);
+            }
+
+            RegisterCallback<MouseDownEvent>(evt =>
+            {
+                _graphView.SelectNode(this);
+            });
 
             RefreshExpandedState();
         }

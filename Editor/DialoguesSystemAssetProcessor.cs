@@ -26,7 +26,6 @@ namespace TelmanDialogues.Assets
                     if (!string.IsNullOrEmpty(folderPath) && AssetDatabase.IsValidFolder(folderPath))
                     {
                         AssetDatabase.DeleteAsset(folderPath);
-                        Debug.Log($"[DialogueSystem] Deleted data folder: {folderPath}");
                     }
                 }
 
@@ -48,7 +47,6 @@ namespace TelmanDialogues.Assets
             if (!string.IsNullOrEmpty(folder) && AssetDatabase.IsValidFolder(folder))
             {
                 AssetDatabase.DeleteAsset(folder);
-                Debug.Log($"[DialogueSystem] Deleted data folder: {folder}");
             }
 
             return AssetDeleteResult.DidNotDelete;
