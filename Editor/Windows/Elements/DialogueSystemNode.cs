@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using TelmanDialogues.Dialogues;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
@@ -13,6 +11,8 @@ namespace TelmanDialogues.Windows.Elements
         private DialoguesEditorGraphView _graphView;
         [SerializeField] private string _nodeName;
         public string NodeName => _nodeName;
+        [SerializeField] private DialoguesBlock _dialoguesBlock;
+        public DialoguesBlock DialoguesBlock => _dialoguesBlock;
 
         public void Init(DialoguesEditorGraphView dialoguesEditorGraphView, Vector2 position)
         {
@@ -55,47 +55,25 @@ namespace TelmanDialogues.Windows.Elements
 
             nodeName.AddToClassList("node-name");
 
-            DialogueBlockEnd currentType = DialogueBlockEnd.End;
-
-            DropdownField outputTypeDropdown = new DropdownField(
-                "Output Type",
-                new List<string> { "End", "FreeChoice", "ForcedChoice" },
-                (int)currentType
-            );
-
-            outputTypeDropdown.RegisterValueChangedCallback(evt =>
-            {
-                currentType = (DialogueBlockEnd)outputTypeDropdown.index;
-
-                bool showOutput = currentType != DialogueBlockEnd.End;
-
-                if (!showOutput)
-                {
-                    foreach (Edge edge in outputPort.connections.ToList())
-                    {
-                        edge.input.Disconnect(edge);
-                        edge.output.Disconnect(edge);
-                        edge.RemoveFromHierarchy();
-                    }
-                }
-
-                outputPort.style.display = showOutput ? DisplayStyle.Flex : DisplayStyle.None;
-            });
-
-            outputPort.style.display = DisplayStyle.None;
-
             inputContainer.Clear();
             outputContainer.Clear();
 
             inputContainer.Add(inputPort);
             inputContainer.Add(nodeName);
-            inputContainer.Add(outputTypeDropdown);
-
             inputContainer.Add(outputPort);
 
             titleContainer.style.display = DisplayStyle.None;
 
+            RegisterCallback<MouseDownEvent>(evt =>
+            {
+                _graphView.SelectNode(this);
+            });
+
             RefreshExpandedState();
+        }
+        public void SetDialoguesBlock(DialoguesBlock block)
+        {
+            _dialoguesBlock = block;
         }
 
         public void SetErrorStyle(Color color)
@@ -105,7 +83,7 @@ namespace TelmanDialogues.Windows.Elements
 
         public void ResetStyle()
         {
-            mainContainer.style.backgroundColor = default;
+            mainContainer.style.backgroundColor = _defaultBGColor;
         }
     }
 }

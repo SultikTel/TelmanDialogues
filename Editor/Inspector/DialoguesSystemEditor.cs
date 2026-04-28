@@ -3,16 +3,24 @@ using TelmanDialogues.Windows;
 using UnityEditor;
 using UnityEngine;
 
-[CustomEditor(typeof(DialoguesSystem))]
-public class DialoguesSystemEditor : Editor
+namespace TelmanDialogues
 {
-    public override void OnInspectorGUI()
+    [CustomEditor(typeof(DialoguesSystem))]
+    public class DialoguesSystemEditor : Editor
     {
-        DrawDefaultInspector();
-
-        if (GUILayout.Button("Debug Log"))
+        public override void OnInspectorGUI()
         {
-            DialoguesEditorWindow dialoguesEditorWindow = EditorWindow.GetWindow<DialoguesEditorWindow>("Dialogue Editor");
+            DrawDefaultInspector();
+
+            if (GUILayout.Button("OpenEditWindow"))
+            {
+                if (target is DialoguesSystem dialoguesSystem)
+                {
+                    DialoguesEditorWindow dialoguesEditorWindow = EditorWindow.GetWindow<DialoguesEditorWindow>("Dialogue Editor");
+
+                    dialoguesEditorWindow.Open(dialoguesSystem);
+                }
+            }
         }
     }
 }
