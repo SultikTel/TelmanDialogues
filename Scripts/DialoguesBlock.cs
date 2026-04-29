@@ -4,7 +4,8 @@ using UnityEngine;
 
 namespace TelmanDialogues.Dialogues
 {
-    public class DialoguesBlock : ScriptableObject
+    [Serializable]
+    public class DialoguesBlock
     {
         [SerializeField] private string _blockName;
         public string BlockName => _blockName;

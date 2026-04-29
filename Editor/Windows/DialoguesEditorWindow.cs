@@ -1,5 +1,7 @@
-﻿using TelmanDialogues.Dialogues;
+﻿using System;
+using TelmanDialogues.Dialogues;
 using UnityEditor;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -9,6 +11,8 @@ namespace TelmanDialogues.Windows
     {
         private DialoguesEditorGraphView _graphView;
         private VisualElement _inspectorPanel;
+        private DialoguesSystem _dialogueSystem;
+        public DialoguesSystem DialogueSystem => _dialogueSystem;
 
         private void OnEnable()
         {
@@ -23,15 +27,16 @@ namespace TelmanDialogues.Windows
         private void CreateGUI()
         {
             AddStyles();
+
             CreateLayout();
         }
 
         public void Open(DialoguesSystem system)
         {
-            if (system == null)
-                return;
+            _dialogueSystem = system;
 
             GetWindow<DialoguesEditorWindow>("Dialogue Editor");
+
             _graphView.Init(system);
         }
 

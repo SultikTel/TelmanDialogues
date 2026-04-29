@@ -1,5 +1,6 @@
 using System;
 using TelmanDialogues.Dialogues;
+using TelmanDialogues.Windows;
 using UnityEditor;
 using UnityEngine;
 
@@ -9,6 +10,7 @@ namespace TelmanDialogues.Assets
     {
         public static AssetDeleteResult OnWillDeleteAsset(string assetPath, RemoveAssetOptions options)
         {
+            DialoguesEditorWindow[] windows = Resources.FindObjectsOfTypeAll<DialoguesEditorWindow>();
             if (AssetDatabase.IsValidFolder(assetPath))
             {
                 string[] guids = AssetDatabase.FindAssets("t:DialoguesSystem", new[] { assetPath });
@@ -20,6 +22,14 @@ namespace TelmanDialogues.Assets
 
                     if (asset == null)
                         continue;
+
+                    foreach (var window in windows)
+                    {
+                        if (window.DialogueSystem == asset)
+                        {
+                            window.Close();
+                        }
+                    }
 
                     string folderPath = asset.DataFolderPath;
 
@@ -41,6 +51,14 @@ namespace TelmanDialogues.Assets
 
             if (singleAsset == null)
                 return AssetDeleteResult.DidNotDelete;
+
+            foreach (var window in windows)
+            {
+                if (window.DialogueSystem == singleAsset)
+                {
+                    window.Close();
+                }
+            }
 
             string folder = singleAsset.DataFolderPath;
 

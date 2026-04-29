@@ -1,82 +1,40 @@
-using System;
+using Codice.CM.Common.Tree;
 using System.Collections.Generic;
 using System.Linq;
 using TelmanDialogues.Data;
-using TelmanDialogues.Data.Error;
 using TelmanDialogues.Dialogues;
 using TelmanDialogues.Windows.Elements;
-using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
-using static UnityEditor.Experimental.GraphView.GraphView;
 
 namespace TelmanDialogues.Windows
 {
     public class DialoguesEditorGraphView : GraphView
     {
-        private Dictionary<string, DialoguesSystemNodeErrorData> _nodes;
         private DialoguesSystem _dialoguesSystem;
         private IMGUIContainer _inspector;
         private Vector2 _inspectorScroll;
+        private List<Edge> Edges => edges.ToList();
+        private List<DialogueSystemNode> Nodes => nodes.ToList().Cast<DialogueSystemNode>().ToList();
         public DialogueSystemNode SelectedNode { get; private set; }
 
         public DialoguesEditorGraphView()
         {
-            _nodes = new Dictionary<string, DialoguesSystemNodeErrorData>();
-
             AddManipulators();
 
             AddGridBG();
 
             AddStyles();
 
-            OnElementsDeleted();
-
             AddToolBar();
-
-            graphViewChanged += OnGraphViewChanged;
-        }
-
-        private GraphViewChange OnGraphViewChanged(GraphViewChange change)
-        {
-            if (change.edgesToCreate != null)
-            {
-                foreach (var edge in change.edgesToCreate)
-                {
-                    var choice = edge.output.userData as DialogueChoice;
-                    var targetNode = edge.input.node as DialogueSystemNode;
-
-                    if (choice != null && targetNode != null)
-                    {
-                        choice.SetNextBlock(targetNode.DialoguesBlock);
-                    }
-                }
-            }
-
-            if (change.elementsToRemove != null)
-            {
-                foreach (var element in change.elementsToRemove)
-                {
-                    if (element is Edge edge)
-                    {
-                        var choice = edge.output.userData as DialogueChoice;
-
-                        if (choice != null)
-                        {
-                            choice.SetNextBlock(null);
-                        }
-                    }
-                }
-            }
-
-            return change;
         }
 
         public void Init(DialoguesSystem dialoguesSystem)
         {
             _dialoguesSystem = dialoguesSystem;
+            LoadGraph();
         }
 
         public void SelectNode(DialogueSystemNode node)
@@ -99,59 +57,87 @@ namespace TelmanDialogues.Windows
 
         private void DrawNodeInspector(DialogueSystemNode node)
         {
-            DialoguesBlock block = node.DialoguesBlock;
 
-            if (block != null)
-            {
-                EditorGUILayout.LabelField("Node Name", block.BlockName, EditorStyles.boldLabel);
-            }
-            _inspectorScroll = EditorGUILayout.BeginScrollView(_inspectorScroll);
-
-            EditorGUILayout.Space(10);
-
-            if (block != null)
-            {
-                SerializedObject so = new SerializedObject(block);
-                so.Update();
-
-                SerializedProperty lines = so.FindProperty("_dialogueLines");
-                EditorGUILayout.PropertyField(lines, true);
-
-                so.ApplyModifiedProperties();
-            }
-
-            EditorGUILayout.EndScrollView();
         }
 
-        #region Save
-
-        private void ResetPosition()
+        #region Save and Load
+        private void Save()
         {
-            UpdateViewTransform(Vector3.zero, Vector3.one);
+            List<DialoguesNodeLinkData> allLinks = new List<DialoguesNodeLinkData>();
+            foreach (Edge edge in Edges)
+            {
+                DialogueSystemNode outputNode = edge.output.node as DialogueSystemNode;
+                DialogueSystemNode inputNode = edge.input.node as DialogueSystemNode;
+
+                allLinks.Add(new DialoguesNodeLinkData(outputNode.GUID, edge.output.portName, inputNode.GUID));
+            }
+
+            List<DialoguesSystemNodeData> allNodes = new List<DialoguesSystemNodeData>();
+            foreach (DialogueSystemNode dialogueSystemNode in Nodes)
+            {
+                allNodes.Add(new DialoguesSystemNodeData(dialogueSystemNode.GUID, dialogueSystemNode.GetPosition().position, dialogueSystemNode.DialogueLines, dialogueSystemNode.BlockName));
+            }
+
+            _dialoguesSystem.Save(allLinks, allNodes);
         }
 
-        private List<DialoguesSystemNodeData> GetAllData()
+        private void LoadGraph()
         {
-            List<DialoguesSystemNodeData> result = new List<DialoguesSystemNodeData>();
+            ClearGraph();
+            CreateNodes();
+            ConnectNodes();
+        }
 
-            foreach (GraphElement element in graphElements)
+        private void ConnectNodes()
+        {
+            foreach (DialogueSystemNode node in Nodes)
             {
-                if (element is DialogueSystemNode node)
+                List<DialoguesNodeLinkData> dialoguesNodeLinkDatas = _dialoguesSystem.NodeLinks.Where(x=> x.BaseNodeGUID== node.GUID).ToList();
+
+                foreach (DialoguesNodeLinkData link in dialoguesNodeLinkDatas)
                 {
-                    DialoguesSystemNodeData nodeData = new DialoguesSystemNodeData();
-
-                    DialoguesBlock block = new DialoguesBlock();
-                    //block.SetData(node.NodeName, node.DialoguesBlock.DialogueLines, null);
-                    nodeData.SetValues(node.GetPosition().position, block);
-                    result.Add(nodeData);
+                    string targetNodeGUID = link.TargetNodeGUID;
+                    DialogueSystemNode targetNode = Nodes.First(x=>x.GUID== targetNodeGUID);
+                    Port outPutPort = node.outputContainer.Query<Port>().ToList().FirstOrDefault(x =>x.portName == link.TextValue &&!x.connections.Any());
+                    LinkNodes(outPutPort, (Port)targetNode.inputContainer[0]);
                 }
             }
-
-            Debug.Log(result.Count);
-
-            return result;
         }
 
+        private void LinkNodes(Port outPut, Port input)
+        {
+            Edge edge = new Edge
+            {
+                output = outPut,
+                input = input
+            };
+
+            edge?.output.Connect(edge);
+            edge?.input.Connect(edge);
+
+            Add(edge);
+        }
+
+        private void CreateNodes()
+        {
+            foreach (DialoguesSystemNodeData nodeData in _dialoguesSystem.DialoguesSystemNodeDatas)
+            {
+                CreateNode(Vector2.zero, nodeData, _dialoguesSystem.NodeLinks);
+            }
+        }
+
+        private void ClearGraph()
+        {
+            foreach (DialogueSystemNode dialogueSystemNode in Nodes)
+            {
+                RemoveElement(dialogueSystemNode);
+            }
+
+            foreach (Edge edge in Edges)
+            {
+                RemoveElement(edge);
+            }
+        }
         #endregion
 
         public override List<Port> GetCompatiblePorts(Port startPort, NodeAdapter nodeAdapter)
@@ -170,85 +156,17 @@ namespace TelmanDialogues.Windows
             return compatiblePorts;
         }
         #region NodeManipulations
-        private DialogueSystemNode CreateNode(Vector2 position)
+        private DialogueSystemNode CreateNode(Vector2 position, DialoguesSystemNodeData nodeData = null, List<DialoguesNodeLinkData> links = null)
         {
             DialogueSystemNode node = new DialogueSystemNode();
 
-            DialoguesBlock block = CreateDialoguesBlockAsset();
-
-            node.Init(this, position, block);
-            node.Draw();
+            node.Draw(this, position, nodeData, links);
 
             AddElement(node);
-
-            AddNode(node);
 
             return node;
         }
 
-        public void AddNode(DialogueSystemNode dialogueSystemNode)
-        {
-            string nodeName = dialogueSystemNode.DialoguesBlock.BlockName;
-
-            if (!_nodes.ContainsKey(nodeName))
-            {
-                DialoguesSystemNodeErrorData dialoguesSystemNodeErrorData = new DialoguesSystemNodeErrorData();
-
-                dialoguesSystemNodeErrorData.Nodes.Add(dialogueSystemNode);
-
-                _nodes.Add(nodeName, dialoguesSystemNodeErrorData);
-
-                return;
-            }
-
-            _nodes[nodeName].Nodes.Add(dialogueSystemNode);
-
-            Color errorColor = _nodes[nodeName].ErrorData.Color;
-
-            dialogueSystemNode.SetErrorStyle(errorColor);
-
-            if (_nodes[nodeName].Nodes.Count == 2)
-            {
-                _nodes[nodeName].Nodes[0].SetErrorStyle(errorColor);
-            }
-        }
-        public void RemoveNode(DialogueSystemNode dialogueSystemNode)
-        {
-            string nodeName = dialogueSystemNode.DialoguesBlock.BlockName;
-
-            _nodes[nodeName].Nodes.Remove(dialogueSystemNode);
-
-            dialogueSystemNode.ResetStyle();
-
-            if (_nodes[nodeName].Nodes.Count == 1)
-            {
-                _nodes[nodeName].Nodes[0].ResetStyle();
-
-                return;
-            }
-
-            if (_nodes[nodeName].Nodes.Count == 0)
-            {
-                _nodes.Remove(nodeName);
-            }
-        }
-
-        private DialoguesBlock CreateDialoguesBlockAsset()
-        {
-            DialoguesBlock block = ScriptableObject.CreateInstance<DialoguesBlock>();
-            block.SetData("NewNode", new(), new());
-            string folderPath = _dialoguesSystem.DataFolderPath;
-
-            string assetPath = AssetDatabase.GenerateUniqueAssetPath(
-                $"{folderPath}/DialoguesBlock.asset"
-            );
-
-            AssetDatabase.CreateAsset(block, assetPath);
-            AssetDatabase.SaveAssets();
-            AssetDatabase.Refresh();
-
-            return block;
-        }
 
         #endregion
 
@@ -258,80 +176,13 @@ namespace TelmanDialogues.Windows
         {
             Toolbar toolbar = new Toolbar();
 
-            Button resetPositionButton = new Button(ResetPosition)
-            {
-                text = "ResetPosition"
-            };
+            Button resetPositionButton = new Button(ResetPosition) { text = "ResetPosition" };
+            Button saveButton = new Button(Save) { text = "Save" };
 
             toolbar.Add(resetPositionButton);
+            toolbar.Add(saveButton);
 
             Add(toolbar);
-        }
-        private void OnElementsDeleted()
-        {
-            deleteSelection += (operationName, askUser) =>
-            {
-                List<DialogueSystemNode> nodesToDelete = new List<DialogueSystemNode>();
-                List<Edge> edgesToDelete = new List<Edge>();
-                foreach (GraphElement element in selection)
-                {
-                    if (element is DialogueSystemNode node)
-                    {
-                        nodesToDelete.Add(node);
-
-                        foreach (var port in node.Query<Port>().ToList())
-                        {
-                            edgesToDelete.AddRange(port.connections);
-                        }
-                    }
-                    else if (element is Edge edge)
-                    {
-                        edgesToDelete.Add(edge);
-                    }
-                }
-
-                foreach (Edge edge in edgesToDelete.Distinct())
-                {
-                    ClearEdge(edge);
-                }
-
-                foreach (DialogueSystemNode node in nodesToDelete)
-                {
-                    foreach (var port in node.Query<Port>().ToList())
-                    {
-                        foreach (var edge in port.connections.ToList())
-                        {
-                            ClearEdge(edge);
-                        }
-                    }
-
-                    if (node.DialoguesBlock != null)
-                    {
-                        string path = AssetDatabase.GetAssetPath(node.DialoguesBlock);
-
-                        if (!string.IsNullOrEmpty(path))
-                        {
-                            AssetDatabase.DeleteAsset(path);
-                        }
-                    }
-
-                    RemoveNode(node);
-                    RemoveElement(node);
-                }
-            };
-        }
-
-        private void ClearEdge(Edge edge)
-        {
-            if (edge.output?.userData is DialogueChoice choice)
-            {
-                choice.SetNextBlock(null);
-            }
-
-            edge.input?.Disconnect(edge);
-            edge.output?.Disconnect(edge);
-
-            RemoveElement(edge);
         }
 
         private void AddManipulators()
@@ -377,6 +228,11 @@ namespace TelmanDialogues.Windows
             gridBG.StretchToParentSize();
 
             Insert(0, gridBG);
+        }
+
+        private void ResetPosition()
+        {
+            UpdateViewTransform(Vector3.zero, Vector3.one);
         }
 
         #endregion
