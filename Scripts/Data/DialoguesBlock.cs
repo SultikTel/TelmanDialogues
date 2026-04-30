@@ -7,21 +7,27 @@ namespace TelmanDialogues.Dialogues
     [Serializable]
     public class DialoguesBlock
     {
+        [SerializeField] private string _guid;
+        public string GUID => _guid;
+
         [SerializeField] private string _blockName;
         public string BlockName => _blockName;
+
         [SerializeField] private List<DialogueLine> _lines;
         public List<DialogueLine> Lines => _lines;
 
         [SerializeField] private List<DialogueChoice> _choices;
         public List<DialogueChoice> Choices => _choices;
 
-        public void SetData(string blockName, List<DialogueLine> lines, List<DialogueChoice> choices)
+        public void SetData(string guid, string blockName, List<DialogueLine> lines, List<DialogueChoice> choices)
         {
+            _guid = guid;
             _blockName = blockName;
             _lines = lines;
             _choices = choices;
         }
     }
+
     [Serializable]
     public class DialogueChoice
     {

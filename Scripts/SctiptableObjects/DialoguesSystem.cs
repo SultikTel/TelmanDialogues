@@ -48,6 +48,7 @@ namespace TelmanDialogues.Dialogues
 
                 var block = new DialoguesBlock();
                 block.SetData(
+                    node.GUID,
                     node.Name,
                     queue != null ? queue.DialogueLines.ToList() : new List<DialogueLine>(),
                     new List<DialogueChoice>()

@@ -21,6 +21,8 @@ namespace TelmanDialogues.Windows.Elements
         {
             TextField nodeName = new TextField();
 
+            _GUID = gUID;
+
             if (dialoguesSystemNodeData == null)
             {
                 SetPosition(new Rect(position, Vector2.zero));
@@ -40,7 +42,6 @@ namespace TelmanDialogues.Windows.Elements
                     }
                 }
             }
-            _GUID = gUID;
 
             _linesQueue = linesQueue;
 
