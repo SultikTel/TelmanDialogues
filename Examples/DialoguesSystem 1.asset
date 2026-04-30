@@ -13,6 +13,31 @@ MonoBehaviour:
   m_Name: DialoguesSystem 1
   m_EditorClassIdentifier: 
   _dataFolderPath: Assets/TelmanDialogues/DialogueBlocks/b2c1fb419c4566f4cb9aac47ce3f4f84
-  _nodeLinks: []
-  _dialogueNodeData: []
-  _dialoguesPure: []
+  _nodeLinks:
+  - _baseNodeGUID: a363a5fa-7c0b-4fc3-b515-5aba3e341051
+    _textValue: NewChoice
+    _targetNodeGUID: 00830588-412c-4864-9e99-74a29c318527
+  _dialogueNodeData:
+  - _name: NewNode
+    _position: {x: 541.60004, y: 180.8}
+    _GUID: 00830588-412c-4864-9e99-74a29c318527
+  - _name: NewNode
+    _position: {x: 18.400002, y: 208.8}
+    _GUID: a363a5fa-7c0b-4fc3-b515-5aba3e341051
+  _dialoguesPure:
+  - _guid: 00830588-412c-4864-9e99-74a29c318527
+    _blockName: NewNode
+    _lines:
+    - _character: 
+      _line: 
+      _events: []
+    _choices: []
+  - _guid: a363a5fa-7c0b-4fc3-b515-5aba3e341051
+    _blockName: NewNode
+    _lines:
+    - _character: 
+      _line: 
+      _events: []
+    _choices:
+    - _text: NewChoice
+      _nextBlockGUID: 00830588-412c-4864-9e99-74a29c318527

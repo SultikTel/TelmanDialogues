@@ -10,15 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 95cd0a3e25031eb40863e3d48431364c, type: 3}
-  m_Name: 31ed9805-2bc0-47d0-8373-11367e736099
+  m_Name: 00830588-412c-4864-9e99-74a29c318527
   m_EditorClassIdentifier: 
   _dialogueLines:
-  - _character: Alya
-    _line: I am curios
-    _events: []
-  - _character: Mama
-    _line: What?
-    _events: []
-  - _character: Mama
-    _line: What?
+  - _character: 
+    _line: 
     _events: []

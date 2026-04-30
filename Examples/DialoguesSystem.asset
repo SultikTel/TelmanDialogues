@@ -66,6 +66,10 @@ MonoBehaviour:
       - Hello
     - _character: Mama
       _line: thanks alye
+      _events:
+      - Hello
+    - _character: Mama
+      _line: dsadad
       _events: []
     _choices:
     - _text: I am curios
@@ -75,6 +79,9 @@ MonoBehaviour:
     _lines:
     - _character: Alya
       _line: I am curios
+      _events: []
+    - _character: Mama
+      _line: What?
       _events: []
     - _character: Mama
       _line: What?

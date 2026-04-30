@@ -8,7 +8,6 @@ namespace TelmanDialogues.Windows
     public class DialoguesEditorWindow : EditorWindow
     {
         private DialoguesEditorGraphView _graphView;
-        private VisualElement _inspectorPanel;
         private DialoguesSystem _dialogueSystem;
         public DialoguesSystem DialogueSystem => _dialogueSystem;
 
@@ -64,28 +63,6 @@ namespace TelmanDialogues.Windows
 
             _graphView.style.flexGrow = 1;
             root.Add(_graphView);
-
-            _inspectorPanel = new VisualElement
-            {
-                style =
-                {
-                    width = 320,
-                    minWidth = 200,
-                    maxWidth = 600,
-
-                    flexShrink = 0,
-                    flexGrow = 0,
-                    flexBasis = 320,
-
-                    backgroundColor = new Color(0.18f, 0.18f, 0.18f),
-                    paddingLeft = 6,
-                    paddingRight = 6
-                }
-            };
-
-            root.Add(_inspectorPanel);
-
-            _graphView.CreateInspector(_inspectorPanel);
         }
 
         private void AddStyles()

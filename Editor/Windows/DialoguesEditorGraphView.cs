@@ -43,6 +43,13 @@ namespace TelmanDialogues.Windows
         public void SelectNode(DialogueSystemNode node)
         {
             SelectedNode = node;
+#if UNITY_EDITOR
+            if (node.LinesQueue != null)
+            {
+                Selection.activeObject = node.LinesQueue;
+                EditorGUIUtility.PingObject(node.LinesQueue);
+            }
+#endif
         }
 
         public void CreateInspector(VisualElement root)

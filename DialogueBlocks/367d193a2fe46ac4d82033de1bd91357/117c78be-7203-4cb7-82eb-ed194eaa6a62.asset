@@ -22,4 +22,8 @@ MonoBehaviour:
     - Hello
   - _character: Mama
     _line: thanks alye
+    _events:
+    - Hello
+  - _character: Mama
+    _line: dsadad
     _events: []
