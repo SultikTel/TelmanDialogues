@@ -52,6 +52,6 @@ namespace TelmanDialogues.Dialogues
         [SerializeField] private string _line;
         public string Line => _line;
         [SerializeField] private List<string> _events;
-        [SerializeField] public List<string> Events => _events;
+        public List<string> Events => _events;
     }
 }
