@@ -1,4 +1,3 @@
-using Codice.CM.Common.Tree;
 using System.Collections.Generic;
 using System.Linq;
 using TelmanDialogues.Data;
@@ -58,7 +57,24 @@ namespace TelmanDialogues.Windows
 
         private void DrawNodeInspector(DialogueSystemNode node)
         {
+            _inspectorScroll = EditorGUILayout.BeginScrollView(_inspectorScroll);
 
+            EditorGUILayout.Space(10);
+
+            //DialoguesBlock block = node.DialoguesBlock;
+
+            //if (block != null)
+            //{
+            //    SerializedObject so = new SerializedObject(block);
+            //    so.Update();
+
+            //    SerializedProperty lines = so.FindProperty("_dialogueLines");
+            //    EditorGUILayout.PropertyField(lines, true);
+
+            //    so.ApplyModifiedProperties();
+            //}
+
+            EditorGUILayout.EndScrollView();
         }
 
         #region Save and Load
@@ -76,7 +92,7 @@ namespace TelmanDialogues.Windows
             List<DialoguesSystemNodeData> allNodes = new List<DialoguesSystemNodeData>();
             foreach (DialogueSystemNode dialogueSystemNode in Nodes)
             {
-                allNodes.Add(new DialoguesSystemNodeData(dialogueSystemNode.GUID, dialogueSystemNode.GetPosition().position, dialogueSystemNode.DialogueLines, dialogueSystemNode.BlockName));
+                allNodes.Add(new DialoguesSystemNodeData(dialogueSystemNode.GUID, dialogueSystemNode.GetPosition().position, dialogueSystemNode.BlockName));
             }
 
             _dialoguesSystem.Save(allLinks, allNodes);
@@ -98,13 +114,13 @@ namespace TelmanDialogues.Windows
         {
             foreach (DialogueSystemNode node in Nodes)
             {
-                List<DialoguesNodeLinkData> dialoguesNodeLinkDatas = _dialoguesSystem.NodeLinks.Where(x=> x.BaseNodeGUID== node.GUID).ToList();
+                List<DialoguesNodeLinkData> dialoguesNodeLinkDatas = _dialoguesSystem.NodeLinks.Where(x => x.BaseNodeGUID == node.GUID).ToList();
 
                 foreach (DialoguesNodeLinkData link in dialoguesNodeLinkDatas)
                 {
                     string targetNodeGUID = link.TargetNodeGUID;
-                    DialogueSystemNode targetNode = Nodes.First(x=>x.GUID== targetNodeGUID);
-                    Port outPutPort = node.outputContainer.Query<Port>().ToList().FirstOrDefault(x =>x.portName == link.TextValue &&!x.connections.Any());
+                    DialogueSystemNode targetNode = Nodes.First(x => x.GUID == targetNodeGUID);
+                    Port outPutPort = node.outputContainer.Query<Port>().ToList().FirstOrDefault(x => x.portName == link.TextValue && !x.connections.Any());
                     LinkNodes(outPutPort, (Port)targetNode.inputContainer[0]);
                 }
             }
@@ -166,11 +182,47 @@ namespace TelmanDialogues.Windows
         {
             DialogueSystemNode node = new DialogueSystemNode();
 
-            node.Draw(this, position, nodeData, links);
+            LinesQueue linesQueue = CreateOrFindLinesQueue(nodeData);
+
+            node.Draw(this, position, linesQueue, nodeData, links);
 
             AddElement(node);
 
             return node;
+        }
+
+        private LinesQueue CreateOrFindLinesQueue(DialoguesSystemNodeData nodeData = null)
+        {
+            string folderPath = _dialoguesSystem.DataFolderPath;
+
+            if (nodeData != null)
+            {
+                string[] guids = AssetDatabase.FindAssets($"t:{nameof(LinesQueue)} {nodeData.GUID}", new[] { folderPath });
+
+                if (guids.Length > 0)
+                {
+                    string path = AssetDatabase.GUIDToAssetPath(guids[0]);
+                    LinesQueue existing = AssetDatabase.LoadAssetAtPath<LinesQueue>(path);
+
+                    if (existing != null)
+                        return existing;
+                }
+            }
+            LinesQueue lines = ScriptableObject.CreateInstance<LinesQueue>();
+            lines.Init(new());
+
+            string assetName = nodeData != null ? nodeData.GUID : System.Guid.NewGuid().ToString();
+            lines.name = assetName;
+
+            string assetPath = AssetDatabase.GenerateUniqueAssetPath(
+                $"{folderPath}/{assetName}.asset"
+            );
+
+            AssetDatabase.CreateAsset(lines, assetPath);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+
+            return lines;
         }
 
 

@@ -13,12 +13,12 @@ namespace TelmanDialogues.Windows.Elements
     {
         private string _GUID;
         public string GUID => _GUID;
-        private List<DialogueLine> _dialoguesLines;
-        public List<DialogueLine> DialogueLines => _dialoguesLines;
+        private LinesQueue _linesQueue;
+        public LinesQueue LinesQueue => _linesQueue;
         private string _blockName;
         public string BlockName => _blockName;
 
-        public void Draw(DialoguesEditorGraphView graphView, Vector2 position, DialoguesSystemNodeData dialoguesSystemNodeData = null, List<DialoguesNodeLinkData> links = null)
+        public void Draw(DialoguesEditorGraphView graphView, Vector2 position, LinesQueue linesQueue, DialoguesSystemNodeData dialoguesSystemNodeData = null, List<DialoguesNodeLinkData> links = null)
         {
             TextField nodeName = new TextField();
 
@@ -43,6 +43,8 @@ namespace TelmanDialogues.Windows.Elements
                     }
                 }
             }
+
+            _linesQueue= linesQueue;
 
             _blockName = nodeName.value;
 

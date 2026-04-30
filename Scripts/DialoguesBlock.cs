@@ -9,16 +9,16 @@ namespace TelmanDialogues.Dialogues
     {
         [SerializeField] private string _blockName;
         public string BlockName => _blockName;
-        [SerializeField] private List<DialogueLine> _dialogueLines;
-        public List<DialogueLine> DialogueLines => _dialogueLines;
+        [SerializeField] private LinesQueue _linesQueue;
+        public LinesQueue LinesQueue => _linesQueue;
 
         [SerializeField] private List<DialogueChoice> _choices;
         public List<DialogueChoice> Choices => _choices;
 
-        public void SetData(string blockName, List<DialogueLine> dialogueLines, List<DialogueChoice> choices)
+        public void SetData(string blockName, LinesQueue linesQueue, List<DialogueChoice> choices)
         {
             _blockName = blockName;
-            _dialogueLines = dialogueLines;
+            _linesQueue = linesQueue;
             _choices = choices;
         }
 

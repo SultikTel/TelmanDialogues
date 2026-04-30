@@ -8,21 +8,18 @@ namespace TelmanDialogues.Data
     [Serializable]
     public class DialoguesSystemNodeData
     {
-        [SerializeField] private string _GUID;
-        public string GUID => _GUID;
+        [SerializeField] private string _name;
+        public string Name => _name;
         [SerializeField] private Vector2 _position;
         public Vector2 Position => _position;
 
-        [SerializeField] private List<DialogueLine> _dialogueLines;
-        public List<DialogueLine> DialogueLines => _dialogueLines;
-        [SerializeField] private string _name;
-        public string Name => _name;
+        [SerializeField] private string _GUID;
+        public string GUID => _GUID;
 
-        public DialoguesSystemNodeData(string gUID, Vector2 position, List<DialogueLine> dialogueLines, string name)
+        public DialoguesSystemNodeData(string gUID, Vector2 position, string name)
         {
             _GUID = gUID;
             _position = position;
-            _dialogueLines = dialogueLines;
             _name = name;
         }
     }

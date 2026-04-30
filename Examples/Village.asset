@@ -21,15 +21,24 @@ MonoBehaviour:
     _textValue: NewChoice
     _targetNodeGUID: eda4d2a1-3d07-4449-a4d9-59c1b19135aa
   _dialogueNodeData:
-  - _GUID: eda4d2a1-3d07-4449-a4d9-59c1b19135aa
+  - _name: NewNode
     _position: {x: 78.399994, y: 376}
-    _dialogueLines: []
-    _name: NewNode
-  - _GUID: 42d6a1e6-0e72-452d-bdbf-7890164fcccb
+    _GUID: eda4d2a1-3d07-4449-a4d9-59c1b19135aa
+  - _name: NewNode
     _position: {x: 461.6, y: 505.59998}
-    _dialogueLines: []
-    _name: NewNode
-  - _GUID: 908b0489-ec4d-4d57-a502-40380045cc3e
+    _GUID: 42d6a1e6-0e72-452d-bdbf-7890164fcccb
+  - _name: dsadasdadsa
     _position: {x: 573.60004, y: 238.40001}
-    _dialogueLines: []
-    _name: NewNode
+    _GUID: 908b0489-ec4d-4d57-a502-40380045cc3e
+  - _name: NewNode
+    _position: {x: 323.2, y: 88}
+    _GUID: de53b03a-053f-4812-ac4e-612eca562d73
+  - _name: NewNode
+    _position: {x: 765.60004, y: -36.800003}
+    _GUID: 74bfdef7-0a67-4be2-b430-b379006bd4dd
+  - _name: NewNode
+    _position: {x: 604.8, y: 51.2}
+    _GUID: 956ea501-a1b2-4fc9-b28e-66c9e35fec50
+  - _name: NewNode
+    _position: {x: 393.6, y: -175.2}
+    _GUID: bf47d52a-2851-4e6d-aa17-cf152288d11f
