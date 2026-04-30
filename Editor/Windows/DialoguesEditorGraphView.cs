@@ -29,6 +29,8 @@ namespace TelmanDialogues.Windows
             AddStyles();
 
             AddToolBar();
+
+            OnElementsDeleted();
         }
 
         public void Init(DialoguesSystem dialoguesSystem)
@@ -159,6 +161,52 @@ namespace TelmanDialogues.Windows
             {
                 RemoveElement(edge);
             }
+        }
+
+        private void OnElementsDeleted()
+        {
+            deleteSelection += (operationName, askUser) =>
+            {
+                List<DialogueSystemNode> nodesToDelete = new List<DialogueSystemNode>();
+                List<Edge> edgesToDelete = new List<Edge>();
+                foreach (GraphElement element in selection)
+                {
+                    if (element is DialogueSystemNode node)
+                    {
+                        nodesToDelete.Add(node);
+
+                        foreach (var port in node.Query<Port>().ToList())
+                        {
+                            edgesToDelete.AddRange(port.connections);
+                        }
+                    }
+                    else if (element is Edge edge)
+                    {
+                        edgesToDelete.Add(edge);
+                    }
+                }
+
+                foreach (Edge edge in edgesToDelete.Distinct())
+                {
+                    edge.input?.Disconnect(edge);
+                    edge.output?.Disconnect(edge);
+                    RemoveElement(edge);
+                }
+
+                foreach (DialogueSystemNode node in nodesToDelete)
+                {
+                    if (node.LinesQueue != null)
+                    {
+                        string path = AssetDatabase.GetAssetPath(node.LinesQueue);
+
+                        if (!string.IsNullOrEmpty(path))
+                        {
+                            AssetDatabase.DeleteAsset(path);
+                        }
+                    }
+                    RemoveElement(node);
+                }
+            };
         }
         #endregion
 
