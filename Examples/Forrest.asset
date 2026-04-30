@@ -13,5 +13,26 @@ MonoBehaviour:
   m_Name: Forrest
   m_EditorClassIdentifier: 
   _dataFolderPath: Assets/TelmanDialogues/DialogueBlocks/ad94ec8f9970b9644bd4bdf19c99f595
-  _nodeLinks: []
-  _dialogueNodeData: []
+  _nodeLinks:
+  - _baseNodeGUID: ecea584a-ed61-4afe-a674-deee135bb41e
+    _textValue: da
+    _targetNodeGUID: 9dbae718-5fed-47e7-993c-08c808b5076a
+  - _baseNodeGUID: ecea584a-ed61-4afe-a674-deee135bb41e
+    _textValue: net
+    _targetNodeGUID: 36dc6705-5184-49ea-813f-190e52abe2dd
+  - _baseNodeGUID: 9dbae718-5fed-47e7-993c-08c808b5076a
+    _textValue: mama but net
+    _targetNodeGUID: 36dc6705-5184-49ea-813f-190e52abe2dd
+  _dialogueNodeData:
+  - _GUID: 36dc6705-5184-49ea-813f-190e52abe2dd
+    _position: {x: 372.80002, y: 224.8}
+    _dialogueLines: []
+    _name: netnet
+  - _GUID: ecea584a-ed61-4afe-a674-deee135bb41e
+    _position: {x: -107.200005, y: 355.19998}
+    _dialogueLines: []
+    _name: mama
+  - _GUID: 9dbae718-5fed-47e7-993c-08c808b5076a
+    _position: {x: 330.40002, y: 493.59998}
+    _dialogueLines: []
+    _name: dada

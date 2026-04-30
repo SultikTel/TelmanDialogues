@@ -4,6 +4,7 @@ using System.Linq;
 using TelmanDialogues.Data;
 using TelmanDialogues.Dialogues;
 using TelmanDialogues.Windows.Elements;
+using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -79,6 +80,11 @@ namespace TelmanDialogues.Windows
             }
 
             _dialoguesSystem.Save(allLinks, allNodes);
+
+#if UNITY_EDITOR
+            EditorUtility.SetDirty(_dialoguesSystem);
+            AssetDatabase.SaveAssets();
+#endif
         }
 
         private void LoadGraph()

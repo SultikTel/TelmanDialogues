@@ -13,3 +13,23 @@ MonoBehaviour:
   m_Name: Village
   m_EditorClassIdentifier: 
   _dataFolderPath: Assets/TelmanDialogues/DialogueBlocks/6dc6799656ab2064e81a30a0ecfd9134
+  _nodeLinks:
+  - _baseNodeGUID: 42d6a1e6-0e72-452d-bdbf-7890164fcccb
+    _textValue: NewChoice
+    _targetNodeGUID: 908b0489-ec4d-4d57-a502-40380045cc3e
+  - _baseNodeGUID: 42d6a1e6-0e72-452d-bdbf-7890164fcccb
+    _textValue: NewChoice
+    _targetNodeGUID: eda4d2a1-3d07-4449-a4d9-59c1b19135aa
+  _dialogueNodeData:
+  - _GUID: eda4d2a1-3d07-4449-a4d9-59c1b19135aa
+    _position: {x: 78.399994, y: 376}
+    _dialogueLines: []
+    _name: NewNode
+  - _GUID: 42d6a1e6-0e72-452d-bdbf-7890164fcccb
+    _position: {x: 461.6, y: 505.59998}
+    _dialogueLines: []
+    _name: NewNode
+  - _GUID: 908b0489-ec4d-4d57-a502-40380045cc3e
+    _position: {x: 573.60004, y: 238.40001}
+    _dialogueLines: []
+    _name: NewNode
