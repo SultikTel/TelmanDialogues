@@ -18,20 +18,18 @@ namespace TelmanDialogues.Windows.Elements
         private string _blockName;
         public string BlockName => _blockName;
 
-        public void Draw(DialoguesEditorGraphView graphView, Vector2 position, LinesQueue linesQueue, DialoguesSystemNodeData dialoguesSystemNodeData = null, List<DialoguesNodeLinkData> links = null)
+        public void Draw(DialoguesEditorGraphView graphView, Vector2 position, LinesQueue linesQueue, string gUID, DialoguesSystemNodeData dialoguesSystemNodeData = null, List<DialoguesNodeLinkData> links = null)
         {
             TextField nodeName = new TextField();
 
             if (dialoguesSystemNodeData == null)
             {
                 SetPosition(new Rect(position, Vector2.zero));
-                _GUID = Guid.NewGuid().ToString();
                 nodeName.value = "NewNode";
             }
             else
             {
                 SetPosition(new Rect(dialoguesSystemNodeData.Position, Vector2.zero));
-                _GUID = dialoguesSystemNodeData.GUID;
                 nodeName.value = dialoguesSystemNodeData.Name;
 
                 if (links != null)
@@ -43,8 +41,9 @@ namespace TelmanDialogues.Windows.Elements
                     }
                 }
             }
+            _GUID = gUID;
 
-            _linesQueue= linesQueue;
+            _linesQueue = linesQueue;
 
             _blockName = nodeName.value;
 

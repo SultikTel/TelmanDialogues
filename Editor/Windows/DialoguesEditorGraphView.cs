@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using TelmanDialogues.Data;
@@ -30,7 +31,7 @@ namespace TelmanDialogues.Windows
 
             AddToolBar();
 
-            OnElementsDeleted();
+            //OnElementsDeleted();
         }
 
         public void Init(DialoguesSystem dialoguesSystem)
@@ -63,18 +64,22 @@ namespace TelmanDialogues.Windows
 
             EditorGUILayout.Space(10);
 
-            //DialoguesBlock block = node.DialoguesBlock;
+            LinesQueue block = node.LinesQueue;
 
-            //if (block != null)
-            //{
-            //    SerializedObject so = new SerializedObject(block);
-            //    so.Update();
+            if (block != null)
+            {
+                EditorGUILayout.LabelField("Block Name:", EditorStyles.boldLabel);
+                EditorGUILayout.LabelField(node.BlockName);
 
-            //    SerializedProperty lines = so.FindProperty("_dialogueLines");
-            //    EditorGUILayout.PropertyField(lines, true);
+                EditorGUILayout.Space(5);
+                SerializedObject so = new SerializedObject(block);
+                so.Update();
 
-            //    so.ApplyModifiedProperties();
-            //}
+                SerializedProperty lines = so.FindProperty("_dialogueLines");
+                EditorGUILayout.PropertyField(lines, true);
+
+                so.ApplyModifiedProperties();
+            }
 
             EditorGUILayout.EndScrollView();
         }
@@ -103,6 +108,33 @@ namespace TelmanDialogues.Windows
             EditorUtility.SetDirty(_dialoguesSystem);
             AssetDatabase.SaveAssets();
 #endif
+
+            ClearUnusedAssets();
+        }
+
+        private void ClearUnusedAssets()
+        {
+            string folderPath = _dialoguesSystem.DataFolderPath;
+            HashSet<string> nodeGuids = new HashSet<string>(_dialoguesSystem.DialoguesSystemNodeDatas.Select(n => n.GUID));
+
+            string[] assetGuids = AssetDatabase.FindAssets($"t:{nameof(LinesQueue)}", new[] { folderPath });
+
+            foreach (string assetGuid in assetGuids)
+            {
+                string path = AssetDatabase.GUIDToAssetPath(assetGuid);
+                LinesQueue asset = AssetDatabase.LoadAssetAtPath<LinesQueue>(path);
+
+                if (asset == null)
+                    continue;
+
+                if (!nodeGuids.Contains(asset.name))
+                {
+                    AssetDatabase.DeleteAsset(path);
+                }
+            }
+
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
         }
 
         private void LoadGraph()
@@ -230,22 +262,32 @@ namespace TelmanDialogues.Windows
         {
             DialogueSystemNode node = new DialogueSystemNode();
 
-            LinesQueue linesQueue = CreateOrFindLinesQueue(nodeData);
+            string GUID;
+            if (nodeData != null)
+            {
+                GUID = nodeData.GUID;
+            }
+            else
+            {
+                GUID = Guid.NewGuid().ToString();
+            }
 
-            node.Draw(this, position, linesQueue, nodeData, links);
+            LinesQueue linesQueue = CreateOrFindLinesQueue(GUID);
+
+            node.Draw(this, position, linesQueue, GUID, nodeData, links);
 
             AddElement(node);
 
             return node;
         }
 
-        private LinesQueue CreateOrFindLinesQueue(DialoguesSystemNodeData nodeData = null)
+        private LinesQueue CreateOrFindLinesQueue(string guid)
         {
             string folderPath = _dialoguesSystem.DataFolderPath;
 
-            if (nodeData != null)
+            if (!string.IsNullOrEmpty(guid))
             {
-                string[] guids = AssetDatabase.FindAssets($"t:{nameof(LinesQueue)} {nodeData.GUID}", new[] { folderPath });
+                string[] guids = AssetDatabase.FindAssets($"t:{nameof(LinesQueue)} {guid}", new[] { folderPath });
 
                 if (guids.Length > 0)
                 {
@@ -256,10 +298,12 @@ namespace TelmanDialogues.Windows
                         return existing;
                 }
             }
+
             LinesQueue lines = ScriptableObject.CreateInstance<LinesQueue>();
             lines.Init(new());
 
-            string assetName = nodeData != null ? nodeData.GUID : System.Guid.NewGuid().ToString();
+            string assetName = !string.IsNullOrEmpty(guid) ? guid : Guid.NewGuid().ToString();
+
             lines.name = assetName;
 
             string assetPath = AssetDatabase.GenerateUniqueAssetPath(

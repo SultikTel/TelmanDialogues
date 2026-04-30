@@ -13,32 +13,26 @@ MonoBehaviour:
   m_Name: Village
   m_EditorClassIdentifier: 
   _dataFolderPath: Assets/TelmanDialogues/DialogueBlocks/6dc6799656ab2064e81a30a0ecfd9134
-  _nodeLinks:
-  - _baseNodeGUID: 42d6a1e6-0e72-452d-bdbf-7890164fcccb
-    _textValue: NewChoice
-    _targetNodeGUID: 908b0489-ec4d-4d57-a502-40380045cc3e
-  - _baseNodeGUID: 42d6a1e6-0e72-452d-bdbf-7890164fcccb
-    _textValue: NewChoice
-    _targetNodeGUID: eda4d2a1-3d07-4449-a4d9-59c1b19135aa
+  _nodeLinks: []
   _dialogueNodeData:
   - _name: NewNode
-    _position: {x: 78.399994, y: 376}
-    _GUID: eda4d2a1-3d07-4449-a4d9-59c1b19135aa
+    _position: {x: -405.59998, y: 531.2}
+    _GUID: 85e2cbcd-bb8b-4e28-bbbd-cfe697475d96
   - _name: NewNode
-    _position: {x: 461.6, y: 505.59998}
-    _GUID: 42d6a1e6-0e72-452d-bdbf-7890164fcccb
-  - _name: dsadasdadsa
-    _position: {x: 573.60004, y: 238.40001}
-    _GUID: 908b0489-ec4d-4d57-a502-40380045cc3e
+    _position: {x: -284.8, y: -30.400002}
+    _GUID: 2c988619-8e20-4499-a288-ff45b02a6571
   - _name: NewNode
-    _position: {x: 323.2, y: 88}
-    _GUID: de53b03a-053f-4812-ac4e-612eca562d73
+    _position: {x: -48, y: 16}
+    _GUID: 8fe9e945-1983-4b97-a58d-e473f6a59b80
   - _name: NewNode
-    _position: {x: 765.60004, y: -36.800003}
-    _GUID: 74bfdef7-0a67-4be2-b430-b379006bd4dd
+    _position: {x: -449.59998, y: 65.600006}
+    _GUID: cb7a689a-d061-4eb2-a261-978abcaffd9e
   - _name: NewNode
-    _position: {x: 604.8, y: 51.2}
-    _GUID: 956ea501-a1b2-4fc9-b28e-66c9e35fec50
+    _position: {x: -648, y: 275.19998}
+    _GUID: 6ba243c6-8369-407b-a69f-48c82fc1fb3a
   - _name: NewNode
-    _position: {x: 393.6, y: -175.2}
-    _GUID: bf47d52a-2851-4e6d-aa17-cf152288d11f
+    _position: {x: -288, y: 292.8}
+    _GUID: 4d9b35e5-d0a0-43e1-a59a-105fb53e4cac
+  - _name: NewNode
+    _position: {x: -105.600006, y: 226.40001}
+    _GUID: 752ce8c3-c436-490d-8123-9edeb20ca4af
