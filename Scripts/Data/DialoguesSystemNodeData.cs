@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using TelmanDialogues.Dialogues;
 using UnityEngine;
 
 namespace TelmanDialogues.Data

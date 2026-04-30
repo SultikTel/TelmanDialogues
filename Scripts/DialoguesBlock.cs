@@ -9,22 +9,17 @@ namespace TelmanDialogues.Dialogues
     {
         [SerializeField] private string _blockName;
         public string BlockName => _blockName;
-        [SerializeField] private LinesQueue _linesQueue;
-        public LinesQueue LinesQueue => _linesQueue;
+        [SerializeField] private List<DialogueLine> _lines;
+        public List<DialogueLine> Lines => _lines;
 
         [SerializeField] private List<DialogueChoice> _choices;
         public List<DialogueChoice> Choices => _choices;
 
-        public void SetData(string blockName, LinesQueue linesQueue, List<DialogueChoice> choices)
+        public void SetData(string blockName, List<DialogueLine> lines, List<DialogueChoice> choices)
         {
             _blockName = blockName;
-            _linesQueue = linesQueue;
+            _lines = lines;
             _choices = choices;
-        }
-
-        public void SetName(string name)
-        {
-            _blockName = name;
         }
     }
     [Serializable]
@@ -32,23 +27,14 @@ namespace TelmanDialogues.Dialogues
     {
         [SerializeField] private string _text;
         public string Text => _text;
-        [SerializeField] private DialoguesBlock _nextBlock;
-        public DialoguesBlock NextBlock => _nextBlock;
 
-        public DialogueChoice(string text, DialoguesBlock nextBlock)
+        [SerializeField] private string _nextBlockGUID;
+        public string NextBlockGUID => _nextBlockGUID;
+
+        public DialogueChoice(string text, string nextBlockGUID)
         {
             _text = text;
-            _nextBlock = nextBlock;
-        }
-
-        public void SetText(string newText)
-        {
-            _text = newText;
-        }
-
-        public void SetNextBlock(DialoguesBlock newDialogueTextBlock)
-        {
-            _nextBlock = newDialogueTextBlock;
+            _nextBlockGUID = nextBlockGUID;
         }
     }
 

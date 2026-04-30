@@ -10,8 +10,6 @@ namespace TelmanDialogues
     {
         public override void OnInspectorGUI()
         {
-            DrawDefaultInspector();
-
             if (GUILayout.Button("OpenEditWindow"))
             {
                 if (target is DialoguesSystem dialoguesSystem)
@@ -21,6 +19,8 @@ namespace TelmanDialogues
                     dialoguesEditorWindow.Open(dialoguesSystem);
                 }
             }
+
+            DrawDefaultInspector();
         }
     }
 }
